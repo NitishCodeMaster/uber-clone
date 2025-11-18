@@ -159,6 +159,148 @@ File references
 
 ---
 
+## Captain Routes
+
+This section documents the captain-facing endpoints implemented in `backend/routes/captain.routes.js`.
+
+### POST /captain/register
+
+Description
+-
+Registers a new captain (driver) with vehicle details and returns the created captain and a JWT token.
+
+Request body (JSON with comments for constraints)
+-
+```json
+{
+  "fullname": {
+    "firstname": "Raj",
+    "lastname": "Kumar"
+  },
+  "email": "captain@example.com",
+  "password": "PlainTextPassword123",
+  "vehicle": {
+    "color": "Blue",
+    "plate": "ABC-1234",
+    "capacity": 4,
+    "vehicleType": "car" // allowed: 'bike', 'car', 'auto'
+  }
+}
+```
+
+// Comments above indicate constraints used by validation middleware: `firstname`/`lastname` min length 3, `email` must be valid, `password` min 6 chars, `vehicle.capacity` integer >=1, `vehicle.vehicleType` one of ['bike','car','auto'].
+
+Success response (201 Created)
+-
+```json
+{
+  "captain": {
+    "_id": "64b2f5aa...",
+    "fullname": { "firstname": "Raj", "lastname": "Kumar" },
+    "email": "captain@example.com",
+    "vehicle": { "color": "Blue", "plate": "ABC-1234", "capacity": 4, "vehicleType": "car" },
+    "__v": 0
+  },
+  "token": "eyJhbGciOi..."
+}
+```
+
+Errors
+-
+- Validation error (400): `{ "errors": [ ... ] }`
+- Duplicate email (409): `{ "error": "Email already exists" }`
+
+### POST /captain/login
+
+Description
+-
+Authenticates a captain and returns a JWT token with the captain object.
+
+Request body (JSON)
+-
+```json
+{
+  "email": "captain@example.com",
+  "password": "PlainTextPassword123"
+}
+```
+
+Success response (200 OK)
+-
+```json
+{
+  "captain": {
+    "_id": "64b2f5aa...",
+    "fullname": { "firstname": "Raj", "lastname": "Kumar" },
+    "email": "captain@example.com",
+    "vehicle": { "color": "Blue", "plate": "ABC-1234", "capacity": 4, "vehicleType": "car" },
+    "__v": 0
+  },
+  "token": "eyJhbGciOi..."
+}
+```
+
+Errors
+-
+- Validation error (400): `{ "errors": [ ... ] }`
+- Invalid credentials (401): `{ "error": "Invalid email or password" }`
+
+### GET /captain/profile
+
+Description
+-
+Returns the authenticated captain's profile. Requires `Authorization: Bearer <token>` header.
+
+Request headers
+-
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Success response (200 OK)
+-
+```json
+{
+  "captain": {
+    "_id": "64b2f5aa...",
+    "fullname": { "firstname": "Raj", "lastname": "Kumar" },
+    "email": "captain@example.com",
+    "vehicle": { "color": "Blue", "plate": "ABC-1234", "capacity": 4, "vehicleType": "car" },
+    "__v": 0
+  }
+}
+```
+
+Errors
+-
+- Missing/invalid token (401): `{ "error": "Unauthorized" }`
+
+### GET /captain/logout
+
+Description
+-
+Logs out the authenticated captain by blacklisting their JWT token (24-hour TTL). Requires `Authorization` header.
+
+Request headers
+-
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Success response (200 OK)
+-
+```json
+{ "message": "Logged out successfully" }
+```
+
+Developer tips
+-
+- Validation rules are implemented in `backend/routes/captain.routes.js` using `express-validator`.
+- The create flow uses `backend/services/captain.service.js` to persist the captain. The service enforces presence checks and calls the captain model to create the document.
+- Protect profile/logout routes with the `authMiddleware.authCaptain` middleware which should validate the token and check blacklist state.
+- Use `models/blacklistToken.model.js` to store blacklisted tokens (24-hour TTL) and check it in your auth middleware.
+
+
 ## POST /users/login
 
 Description

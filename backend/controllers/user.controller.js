@@ -46,14 +46,20 @@ module.exports.loginUser = async (req, res, next) => {
 
     const user = await userModel.findOne({ email }).select("+password");
     if (!user) {
-        return res.status(400).json({ error: "Invalid email or password" });
+        return res.status(400).json({ error: "User not found. Please check your email." });
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-        return res.status(400).json({ error: "Invalid email or password" });
+        return res.status(400).json({ error: "Incorrect password. Please try again." });
     }
     const token = user.generateAuthToken();
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    });
     res.status(200).json({ user, token });
+
 }
 
 module.exports.getUserProfile = async (req, res, next) => {
