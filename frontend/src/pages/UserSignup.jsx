@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { userDataContext } from '../context/UserContext';
@@ -8,12 +8,13 @@ const UserSignup = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userData, setUserData] = useState({});
+  const [error, setError] = useState(null); 
   const navigate = useNavigate();
-  const { user, setUser } = React.useContext(userDataContext);
+  const { setUser } = React.useContext(userDataContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); 
 
     const newUser = {
       fullname: {
@@ -24,13 +25,25 @@ const UserSignup = () => {
       password
     };
 
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, newUser);
 
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/register`, newUser);
-    if (response.status === 201) {
-      const data = response.data;
-      setUser(data.user);
-      navigate('/home');
-    }
+      if (response.status === 201) {
+        const data = response.data;
+        setUser(data.user);
+        localStorage.setItem('token', data.token);
+        navigate('/home');
+      }
+    } catch (err) { 
+      if (err.response) { 
+        const backendError = err.response.data.error ||
+          (err.response.data.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].msg : null);
+
+        setError(backendError || 'An unexpected error occurred during registration.');
+      } else { 
+        setError('Network Error: Could not reach the server.');
+      }
+    } 
 
     setFirstName('');
     setLastName('');
@@ -89,7 +102,12 @@ const UserSignup = () => {
             required
             type="password"
             placeholder='Create password'
-          />
+          /> 
+          {error && (
+            <p className='text-red-500 text-sm mb-4 p-2 bg-red-100 rounded text-left'>
+              {error}
+            </p>
+          )}
 
           <button
             className='w-full bg-black text-white py-3 rounded mt-2 font-semibold mb-4 hover:bg-[#1a1a1a]'>

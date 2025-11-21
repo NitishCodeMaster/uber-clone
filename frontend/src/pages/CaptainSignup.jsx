@@ -1,96 +1,201 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import CaptainDataContext from '../context/CaptainContext';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const CaptainSignup = () => {
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [captainData, setCaptainData] = useState({});
+  const [vehicleColor, setVehicleColor] = useState('');
+  const [vehiclePlate, setVehiclePlate] = useState('');
+  const [vehicleCapacity, setVehicleCapacity] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
 
-  const handleSubmit = (e) => {
+  const { captain, setCaptain } = React.useContext(CaptainDataContext);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setCaptainData({ fullname: { firstName, lastName }, email, password });
 
+    const payload = {
+      fullname: { firstname: firstName, lastname: lastName },
+      email,
+      password,
+      vehicle: {
+        color: vehicleColor,
+        plate: vehiclePlate,
+        capacity: Number(vehicleCapacity),
+        vehicleType: vehicleType,
+      }
+    };
+    console.log("PAYLOAD → ", payload);
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/captains/register`, payload);
+      if (response.status !== 201) {
+        throw new Error('Signup failed');
+      }
+      const data = response.data;
+      setCaptain(data.captain);
+      localStorage.setItem('token', data.token);
+      navigate('/captain-home');
+    } catch (error) {
+      console.error('Signup failed:', error);
+    }
+
+    // reset
     setFirstName('');
     setLastName('');
     setEmail('');
     setPassword('');
+    setVehicleColor('');
+    setVehiclePlate('');
+    setVehicleCapacity('');
+    setVehicleType('');
   };
+
   return (
-    <div className='min-h-screen p-7 flex flex-col justify-between'>
-      <div>
-        <img
-          className='w-16 mb-10 opacity-90'
-          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-          alt="Uber Logo"
-        />
+    <div className="min-h-screen flex flex-col justify-between px-6 py-7 bg-white">
 
-        <form onSubmit={handleSubmit}>
+      {/* Logo */}
+      <img
+        className="w-20 mb-8 opacity-90"
+        src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+        alt="Uber Logo"
+      />
 
-          <h3 className='text-xl mb-2 font-semibold'>What's your name?</h3>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
 
-          <div className='flex gap-4 mb-6'>
+        {/* Name */}
+        <div>
+          <h3 className="text-xl font-semibold mb-2">What's your name?</h3>
+
+          <div className="flex gap-3">
             <input
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className='bg-[#eeeeee] w-1/2 px-3 py-2 rounded placeholder:text-base'
+              className="bg-[#eeeeee] w-1/2 px-3 py-2 rounded text-base"
               required
               type="text"
-              placeholder='First name'
+              placeholder="First name"
             />
 
             <input
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className='bg-[#eeeeee] w-1/2 px-3 py-2 rounded placeholder:text-base'
+              className="bg-[#eeeeee] w-1/2 px-3 py-2 rounded text-base"
               required
               type="text"
-              placeholder='Last name'
+              placeholder="Last name"
             />
           </div>
+        </div>
 
-          <h3 className='text-xl mb-2 font-semibold'>Enter your email</h3>
+        {/* Email */}
+        <div>
+          <h3 className="text-xl font-semibold mb-2">Enter your email</h3>
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className='bg-[#eeeeee] w-full px-3 py-2 rounded mb-6 placeholder:text-base'
+            className="bg-[#eeeeee] w-full px-3 py-2 rounded text-base"
             required
             type="email"
-            placeholder='Enter email'
+            placeholder="Enter email"
           />
+        </div>
 
-          <h3 className='text-xl mb-2 font-semibold'>Create a password</h3>
+        {/* Password */}
+        <div>
+          <h3 className="text-xl font-semibold mb-2">Create a password</h3>
           <input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className='bg-[#eeeeee] w-full px-3 py-2 rounded mb-6 placeholder:text-base'
+            className="bg-[#eeeeee] w-full px-3 py-2 rounded text-base"
             required
             type="password"
-            placeholder='Create password'
+            placeholder="Create password"
           />
+        </div>
 
-          <button
-            className='w-full bg-black text-white py-3 rounded mt-2 font-semibold mb-4 hover:bg-[#1a1a1a]'>
-            Sign Up as Captain
-          </button>
+        {/* Vehicle Details */}
+        <div>
+          <h3 className="text-xl font-semibold mb-3">Vehicle details</h3>
 
-          <p className='text-center text-base'>
-            Already registered?
-            <Link to="/captain-login" className='text-[#0d6efd] ml-1'>
-              Login
-            </Link>
-          </p>
-        </form>
-      </div>
+          <div className="flex gap-3 mb-3">
+            <input
+              value={vehicleColor}
+              onChange={(e) => setVehicleColor(e.target.value)}
+              className="bg-[#eeeeee] w-1/3 px-3 py-2 rounded text-base"
+              required
+              type="text"
+              placeholder="Color"
+            />
 
-      <div>
-        <p className="text-[10px] leading-tight text-center text-gray-500">
-          This site is protected by ReCAPTCHA.&nbsp;
-          <span className="underline">Google Privacy Policy</span> and{" "}
-          <span className="underline">Terms of Service</span> apply.
+            <input
+              value={vehiclePlate}
+              onChange={(e) => setVehiclePlate(e.target.value)}
+              className="bg-[#eeeeee] w-1/3 px-3 py-2 rounded text-base"
+              required
+              type="text"
+              placeholder="Plate No."
+            />
+
+            <input
+              value={vehicleCapacity}
+              onChange={(e) => setVehicleCapacity(e.target.value)}
+              className="bg-[#eeeeee] w-1/3 px-3 py-2 rounded text-base"
+              required
+              min={1}
+              type="number"
+              placeholder="Capacity"
+            />
+          </div>
+
+          {/* Vehicle Type */}
+          <div>
+            <label className="block mb-2 font-medium text-base">
+              Vehicle type
+            </label>
+
+            <select
+              value={vehicleType}
+              onChange={(e) => setVehicleType(e.target.value)}
+              className="bg-[#eeeeee] w-full px-3 py-2 rounded text-base"
+              required
+            >
+              <option value="" disabled>Select vehicle type</option>
+              <option value="car">Car</option>
+              <option value="auto">Auto</option>
+              <option value="bike">Bike</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Button */}
+        <button
+          className="w-full bg-black text-white py-3 rounded font-semibold text-lg hover:bg-[#111]"
+        >
+          Sign Up as Captain
+        </button>
+
+        <p className="text-center text-base">
+          Already registered?
+          <Link to="/captain-login" className="text-[#0d6efd] ml-1">
+            Login
+          </Link>
         </p>
-      </div> 
+      </form>
+
+      {/* Footer */}
+      <p className="text-[10px] text-gray-500 leading-tight text-center mt-8">
+        This site is protected by reCAPTCHA.
+        <span className="underline"> Google Privacy Policy </span> and
+        <span className="underline"> Terms of Service </span> apply.
+      </p>
     </div>
   )
 }

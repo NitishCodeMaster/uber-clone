@@ -1,19 +1,42 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios';
+import { userDataContext } from '../context/UserContext';
 
 const UserLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userData, setUserData] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { setUser } = React.useContext(userDataContext);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setUserData({
+    setError(null);
+
+    const loginData = {
       email: email,
       password: password
-    })
+    };
 
-    setEmail('');
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, loginData);
+
+      if (response.status === 200) {
+        setUser(response.data.user);
+        localStorage.setItem('token', response.data.token);
+        navigate('/home');
+      }
+    } catch (err) {
+      if (err.response) {
+        const backendError = err.response.data.error ||
+          (err.response.data.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].msg : null);
+
+        setError(backendError || 'An unexpected error occurred during login.');
+      } else {
+        setError('Network Error: Could not reach the server.');
+      }
+    }
     setPassword('');
   }
   return (
@@ -22,12 +45,10 @@ const UserLogin = () => {
         <img
           className='w-16 mb-10 opacity-90'
           src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-          alt=""
+          alt="Uber Logo"
         />
 
-        <form onSubmit={(e) => {
-          handleSubmit(e)
-        }}>
+        <form onSubmit={handleSubmit}>
           <h3 className='text-xl mb-2 font-semibold'>What's Your email?</h3>
           <input
             value={email}
@@ -50,6 +71,13 @@ const UserLogin = () => {
             type="password"
             placeholder='Enter your password'
           />
+
+          {/* Display error message */}
+          {error && (
+            <p className='text-red-500 text-sm mb-4 p-2 bg-red-100 rounded text-left'>
+              {error}
+            </p>
+          )}
 
           <button
             className='w-full bg-black text-white py-3 rounded mt-2 font-semibold mb-2 hover:bg-[#1a1a1a]'>
