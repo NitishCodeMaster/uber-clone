@@ -1,5 +1,5 @@
 const dotenv = require("dotenv");
-dotenv.config(); 
+dotenv.config();
 
 const cors = require("cors");
 const express = require("express");
@@ -11,7 +11,8 @@ const captainRoutes = require("./routes/captain.routes");
 connectToDb();
 
 app.use(cors({
-    origin: "http://localhost:3000", // frontend ya Postman origin
+    origin: "http://localhost:5173",
+    methods: "GET,POST,PUT,DELETE",
     credentials: true                // must for cookies
 }));
 
