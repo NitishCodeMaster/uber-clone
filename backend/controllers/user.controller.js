@@ -14,7 +14,7 @@ module.exports.registerUser = async (req, res, next) => {
     const isUserExist = await userModel.findOne({ email });
 
     if (isUserExist) {
-        return res.status(400).json({ error: "User with this email already exists" });
+        return res.status(409).json({ error: "User with this email already exists" });
     }
 
     const hashedPassword = await userModel.hashPassword(password);
@@ -46,11 +46,11 @@ module.exports.loginUser = async (req, res, next) => {
 
     const user = await userModel.findOne({ email }).select("+password");
     if (!user) {
-        return res.status(400).json({ error: "User not found. Please check your email." });
+        return res.status(401).json({ error: "User not found. Please check your email." });
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-        return res.status(400).json({ error: "Incorrect password. Please try again." });
+        return res.status(401).json({ error: "Incorrect password. Please try again." });
     }
     const token = user.generateAuthToken();
     res.cookie("token", token, {

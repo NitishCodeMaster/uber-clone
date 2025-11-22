@@ -29,16 +29,12 @@ module.exports.authUser = async (req, res, next) => {
 
 module.exports.authCaptain = async (req, res, next) => {
   try {
-    let token = req.cookies?.token;
-
-    if (!token && req.headers.authorization) {
-      token = req.headers.authorization.split(" ")[1];
-    }
+    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized - no token provided" });
     }
-
+    
     const isBlacklisted = await blacklistedTokenModel.findOne({ token });
     if (isBlacklisted) {
       return res.status(401).json({ message: "Unauthorized - token blacklisted" });
