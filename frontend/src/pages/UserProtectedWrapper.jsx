@@ -1,6 +1,7 @@
-import React, { use, useContext, useEffect } from 'react'
-import { userDataContext } from '../context/UserContext'
+import React, { useContext, useEffect, useState } from 'react'
+import  userDataContext  from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
 
 const UserProtectedWrapper = ({ children }) => {
     const token = localStorage.getItem('token');
@@ -11,7 +12,7 @@ const UserProtectedWrapper = ({ children }) => {
         if (!token || !user) {
             navigate('/login');   
         }
-        axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
