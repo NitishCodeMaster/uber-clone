@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect } from 'react'
+import React, { use, useContext, useEffect, useState } from 'react'
 import { CaptainDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -6,7 +6,7 @@ const CaptainProtectWrapper = ({ children }) => {
     const token = localStorage.getItem('token');
     const { captain, setCaptain } = useContext(CaptainDataContext);
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useContext(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (!token || !captain) {
@@ -14,7 +14,7 @@ const CaptainProtectWrapper = ({ children }) => {
         }
     }, [token, captain]);
 
-    axios.get(`${import.meta.env.VITE_BASE_URL}/captain/profile`, {
+    axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`, {
         headers: {
             Authorization: `Bearer ${token}`
         }

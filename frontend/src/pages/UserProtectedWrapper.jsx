@@ -4,13 +4,32 @@ import { useNavigate } from 'react-router-dom'
 
 const UserProtectedWrapper = ({ children }) => {
     const token = localStorage.getItem('token');
-    const { user } = useContext(userDataContext);
+    const { user, setUser } = useContext(userDataContext);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         if (!token || !user) {
-            navigate('/login');
+            navigate('/login');   
         }
+        axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                setUser(response.data.user);
+                setIsLoading(false);
+            }
+        }).catch(error => {
+            console.error('Error fetching user profile:', error);
+            localStorage.removeItem('token');
+            navigate('/login');
+        });
     }, [token, user]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>{children} </div>
