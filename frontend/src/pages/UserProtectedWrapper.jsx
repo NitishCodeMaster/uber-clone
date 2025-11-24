@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import  userDataContext  from '../context/UserContext'
+import { userDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 
@@ -10,7 +10,7 @@ const UserProtectedWrapper = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         if (!token || !user) {
-            navigate('/login');   
+            navigate('/login');
         }
         axios.get(`${import.meta.env.VITE_API_URL}/users/profile`, {
             headers: {
@@ -18,7 +18,7 @@ const UserProtectedWrapper = ({ children }) => {
             }
         }).then(response => {
             if (response.status === 200) {
-                setUser(response.data.user);
+                setUser(response.data);
                 setIsLoading(false);
             }
         }).catch(error => {
@@ -26,7 +26,7 @@ const UserProtectedWrapper = ({ children }) => {
             localStorage.removeItem('token');
             navigate('/login');
         });
-    }, [token, user]);
+    }, [token, user, navigate, setUser]);
 
     if (isLoading) {
         return <div>Loading...</div>;
