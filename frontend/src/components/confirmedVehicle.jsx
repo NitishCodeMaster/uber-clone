@@ -1,8 +1,10 @@
 import React from 'react';
 
-const ConfirmedVehicle = ({ setShowVehiclePanel, setVehicleFound }) => {
+// Use React.forwardRef to accept the ref from Home.jsx
+const ConfirmedVehicle = React.forwardRef(({ setShowVehiclePanel, setVehicleFound }, ref) => {
     return (
-        <div className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
+        // Attach the forwarded ref to the root div for GSAP animation control
+        <div ref={ref} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
 
             {/* Header */}
             <div
@@ -54,13 +56,13 @@ const ConfirmedVehicle = ({ setShowVehiclePanel, setVehicleFound }) => {
 
             {/* Confirm Button */}
             <button
-                onClick={() => setVehicleFound(true),
-                    setShowVehiclePanel(false)};
+                // FIX: Corrected onClick syntax to a function block
+                onClick={() => { setVehicleFound(true); setShowVehiclePanel(false); }}
                 className="w-full bg-green-600 text-white font-semibold p-3 rounded-lg mt-2">
-            Confirm
-        </button>
+                Confirm
+            </button>
         </div >
     );
-};
+});
 
 export default ConfirmedVehicle;

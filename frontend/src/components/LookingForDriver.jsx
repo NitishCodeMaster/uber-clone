@@ -1,8 +1,11 @@
 import React from 'react'
 
-const LookingForDriver = () => {
+// Use React.forwardRef to accept the ref from Home.jsx
+// Accept setShowVehiclePanel as a prop
+const LookingForDriver = React.forwardRef(({ setShowVehiclePanel }, ref) => {
     return (
-        <div className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
+        // Attach the forwarded ref to the root div for GSAP animation control
+        <div ref={ref} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
 
             {/* Header */}
             <div
@@ -53,6 +56,6 @@ const LookingForDriver = () => {
             </div>
         </div>
     )
-}
+});
 
 export default LookingForDriver
