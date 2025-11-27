@@ -6,6 +6,7 @@ import LocationSearchpanel from "../components/LocationSearchpanel";
 import VehiclePanel from "../components/vehiclePanel";
 import ConfirmedVehicle from "../components/confirmedVehicle";
 import LookingForDriver from "../components/LookingForDriver";
+import WaitingForDriver from "../components/WaitingForDriver";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -14,6 +15,7 @@ const Home = () => {
   const [showVehiclePanel, setShowVehiclePanel] = useState(false);
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
   const [VehicleFound, setVehicleFound] = useState(false);
+  const [WaitDriver, setWaitDriver] = useState(false);
 
   const formPanelRef = useRef(null);
   const slidePanelRef = useRef(null);
@@ -21,6 +23,7 @@ const Home = () => {
   const closeRef = useRef(null);
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
+  const WaitDriverRef = useRef(null);
 
   // LOCATION SEARCH PANEL ANIMATION
   useGSAP(() => {
@@ -28,7 +31,7 @@ const Home = () => {
       gsap.to(formPanelRef.current, { top: 0, duration: 0.5, ease: "power3.out" });
 
       gsap.to(slidePanelRef.current, {
-        height: "58%",
+        height: "60%",
         duration: 0.5,
         ease: "power3.out",
         opacity: 1,
@@ -37,7 +40,7 @@ const Home = () => {
       gsap.to(closeRef.current, { opacity: 1 });
     } else {
       gsap.to(formPanelRef.current, {
-        top: "54%",
+        top: "59%",
         duration: 0.5,
         ease: "power3.inOut",
       });
@@ -56,11 +59,15 @@ const Home = () => {
   useGSAP(() => {
     if (showVehiclePanel) {
       gsap.to(vehiclePanelRef.current, {
-        transform: 'translateY(0)'
+        y: 0,
+        duration: 0.5,
+        ease: "power3.out"
       })
     } else {
       gsap.to(vehiclePanelRef.current, {
-        transform: 'transformY(100%)'
+        y: "100%",
+        duration: 0.5,
+        ease: "power3.in"
       })
     }
   }, [showVehiclePanel])
@@ -75,11 +82,20 @@ const Home = () => {
 
   useGSAP(() => {
     if (VehicleFound) {
-      gsap.to(vehicleFoundRef.current, { y: 0, duration: 0.5, ease: "power3.out" });
+      gsap.to(vehicleFoundRef.current, { y: "0%", duration: 0.5, ease: "power3.out" });
     } else {
       gsap.to(vehicleFoundRef.current, { y: "100%", duration: 0.5, ease: "power3.in" });
     }
   }, [VehicleFound]);
+
+  useGSAP(() => {
+    if (WaitDriver) {
+      gsap.to(WaitDriverRef.current, { y: "0%", duration: 0.5, ease: "power3.out" });
+    } else {
+      gsap.to(WaitDriverRef.current, { y: "100%", duration: 0.5, ease: "power3.in" });
+    }
+  }, [WaitDriver]);
+
   return (
     <div className="h-screen w-screen relative overflow-hidden">
 
@@ -147,31 +163,38 @@ const Home = () => {
         style={{ height: "0%" }}
       >
         <LocationSearchpanel
-          // setPanelOpen={setPanelOpen}
           setShowVehiclePanel={setShowVehiclePanel}
         />
       </div>
-
-      {confirmRidePanel && (
-        <ConfirmedVehicle
-          setShowVehiclePanel={setShowVehiclePanel}
-          setVehicleFound={setVehicleFound}
-          ref={confirmRidePanelRef}
-        />
-      )}
-
-      {VehicleFound && (
-        <LookingForDriver
-          setShowVehiclePanel={setShowVehiclePanel}
-          ref={vehicleFoundRef}
-        />
-      )}
 
       {showVehiclePanel && (
         <VehiclePanel
           setShowVehiclePanel={setShowVehiclePanel}
           vehiclePanelRef={vehiclePanelRef}
           setConfirmRidePanel={setConfirmRidePanel}
+        />
+      )}
+
+      {confirmRidePanel && (
+        <ConfirmedVehicle
+          setConfirmRidePanel={setConfirmRidePanel}
+          setVehicleFound={setVehicleFound}
+          confirmRidePanelRef={confirmRidePanelRef}
+          setWaitDriver={setWaitDriver}
+        />
+      )}
+
+      {VehicleFound && (
+        <LookingForDriver
+          setVehicleFound={setVehicleFound}
+          vehicleFoundRef={vehicleFoundRef}
+        />
+      )}
+
+      {WaitDriver && (
+        <WaitingForDriver
+          setWaitDriver={setWaitDriver}
+          WaitDriverRef={WaitDriverRef}
         />
       )}
     </div>

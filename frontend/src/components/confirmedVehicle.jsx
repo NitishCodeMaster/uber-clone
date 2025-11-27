@@ -1,15 +1,13 @@
 import React from 'react';
 
-// Use React.forwardRef to accept the ref from Home.jsx
-const ConfirmedVehicle = React.forwardRef(({ setShowVehiclePanel, setVehicleFound }, ref) => {
+const ConfirmedVehicle = ({ setConfirmRidePanel, setVehicleFound, confirmRidePanelRef, setWaitDriver }) => {
     return (
-        // Attach the forwarded ref to the root div for GSAP animation control
-        <div ref={ref} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
+        <div ref={confirmRidePanelRef} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
 
             {/* Header */}
             <div
                 className="flex items-center gap-2 mb-3 cursor-pointer"
-                onClick={() => setShowVehiclePanel(false)}
+                onClick={() => { setConfirmRidePanel(false); setVehicleFound(true) }}
             >
                 <i className="ri-arrow-down-wide-line text-xl"></i>
                 <h3 className="text-lg font-semibold">Confirmed Your Ride</h3>
@@ -56,13 +54,12 @@ const ConfirmedVehicle = React.forwardRef(({ setShowVehiclePanel, setVehicleFoun
 
             {/* Confirm Button */}
             <button
-                // FIX: Corrected onClick syntax to a function block
-                onClick={() => { setVehicleFound(true); setShowVehiclePanel(false); }}
+                onClick={() => { setVehicleFound(true); setConfirmRidePanel(false); setWaitDriver(true); }}
                 className="w-full bg-green-600 text-white font-semibold p-3 rounded-lg mt-2">
                 Confirm
             </button>
         </div >
     );
-});
+};
 
 export default ConfirmedVehicle;

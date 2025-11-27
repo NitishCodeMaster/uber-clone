@@ -1,16 +1,12 @@
 import React from 'react'
 
-// Use React.forwardRef to accept the ref from Home.jsx
-// Accept setShowVehiclePanel as a prop
-const LookingForDriver = React.forwardRef(({ setShowVehiclePanel }, ref) => {
+const LookingForDriver = ({ setVehicleFound, vehicleFoundRef }) => {
     return (
-        // Attach the forwarded ref to the root div for GSAP animation control
-        <div ref={ref} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
+        <div ref={vehicleFoundRef} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
 
-            {/* Header */}
             <div
                 className="flex items-center gap-2 mb-3 cursor-pointer"
-                onClick={() => setShowVehiclePanel(false)}
+                onClick={() => setVehicleFound(false)}
             >
                 <i className="ri-arrow-down-wide-line text-xl"></i>
                 <h3 className="text-lg font-semibold">Looking for a Driver</h3>
@@ -56,6 +52,6 @@ const LookingForDriver = React.forwardRef(({ setShowVehiclePanel }, ref) => {
             </div>
         </div>
     )
-});
+};
 
 export default LookingForDriver
