@@ -179,8 +179,7 @@ const Home = () => {
         <ConfirmedVehicle
           setConfirmRidePanel={setConfirmRidePanel}
           setVehicleFound={setVehicleFound}
-          confirmRidePanelRef={confirmRidePanelRef}
-          setWaitDriver={setWaitDriver}
+          confirmRidePanelRef={confirmRidePanelRef} 
         />
       )}
 
@@ -188,6 +187,7 @@ const Home = () => {
         <LookingForDriver
           setVehicleFound={setVehicleFound}
           vehicleFoundRef={vehicleFoundRef}
+          setWaitDriver={setWaitDriver}
         />
       )}
 

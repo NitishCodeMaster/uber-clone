@@ -10,32 +10,33 @@ const CaptainProtectWrapper = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!token || !captain) {
+        if (!token) {
             navigate('/captain-login');
+            return;
         }
         axios.get(`${import.meta.env.VITE_API_URL}/captains/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        }).then((response) => {
+        }).then(response => {
             if (response.status === 200) {
-                setIsLoading(false);
                 setCaptain(response.data.captain);
+                setIsLoading(false);
             }
-        }).catch((error) => {
+        }).catch(error => {
             console.error('Error fetching captain profile:', error);
             localStorage.removeItem('token');
             navigate('/captain-login');
         });
-    }, [token, captain]);
+    }, [token]);
 
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div>{children} </div>
+        <>{children} </>
     )
 }
 
-export default CaptainProtectWrapper
+export default CaptainProtectWrapper;

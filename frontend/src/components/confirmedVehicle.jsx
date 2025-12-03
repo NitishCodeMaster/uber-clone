@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ConfirmedVehicle = ({ setConfirmRidePanel, setVehicleFound, confirmRidePanelRef, setWaitDriver }) => {
+const ConfirmedVehicle = ({ setConfirmRidePanel, setVehicleFound, confirmRidePanelRef }) => {
     return (
         <div ref={confirmRidePanelRef} className="fixed bottom-0 left-0 w-full bg-white p-4 z-30 shadow-xl rounded-t-2xl space-y-4">
 
@@ -54,7 +54,7 @@ const ConfirmedVehicle = ({ setConfirmRidePanel, setVehicleFound, confirmRidePan
 
             {/* Confirm Button */}
             <button
-                onClick={() => { setVehicleFound(true); setConfirmRidePanel(false); setWaitDriver(true); }}
+                onClick={() => { setVehicleFound(true); setConfirmRidePanel(false);}}
                 className="w-full bg-green-600 text-white font-semibold p-3 rounded-lg mt-2">
                 Confirm
             </button>

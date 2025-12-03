@@ -9,9 +9,10 @@ export function CaptainContext({ children }) {
 
     const updateCaptain = (captainData) => {
         setCaptain(captainData);
+        console.log("CAPTAIN DATA SET:", captainData);
     };
 
-    const value = { captain, updateCaptain, isloading, setIsLoading, error, setError };
+    const value = { captain,setCaptain, updateCaptain, isloading, setIsLoading, error, setError };
 
     return (
         <CaptainDataContext.Provider value={value}>

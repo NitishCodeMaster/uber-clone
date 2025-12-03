@@ -18,7 +18,7 @@ const CaptainSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    navigate("/captain-home");
     const payload = {
       fullname: { firstname: firstName, lastname: lastName },
       email,
@@ -33,13 +33,13 @@ const CaptainSignup = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/captains/register`, payload);
-      if (response.status !== 201) {
-        throw new Error('Signup failed');
+      if (response.status === 201) {
+        const data = response.data;
+        updateCaptain(data.captain);
+         console.log("Signup response:", data);
+        localStorage.setItem('token', data.token);
+        navigate('/captain-home');
       }
-      const data = response.data;
-      updateCaptain(data.captain);
-      localStorage.setItem('token', data.token);
-      navigate('/captain-home');
     } catch (error) {
       console.error('Signup failed:', error);
     }
@@ -174,11 +174,17 @@ const CaptainSignup = () => {
         </div>
 
         {/* Button */}
+        {/* Submit Button */}
         <button
-          className="w-full bg-black text-white py-3 rounded font-semibold text-lg hover:bg-[#111]"
+          type="submit"
+          className="w-full bg-black text-white py-3 rounded-xl 
+             font-semibold text-lg text-center
+             active:scale-95 transition-all duration-200 
+             hover:bg-[#111] shadow-md"
         >
           Sign Up as Captain
         </button>
+
 
         <p className="text-center text-base">
           Already registered?
